@@ -1,0 +1,38 @@
+const sheetUrl = "https://docs.google.com/spreadsheets/d/1RH7t1yeiD8balh36yAGD79qQlT1ZCiIkn1858qJmk8w/export?format=csv";
+
+async function loadRecipes() {
+  const response = await fetch(sheetUrl);
+  const csv = await response.text();
+  const rows = csv.split("\n").slice(1).map(r => r.split(","));
+  const container = document.getElementById("recipes");
+
+  rows.forEach(row => {
+    const [id, name, category, kcal, protein, fat, carbs, weight, photo, ingredients, steps, note] = row;
+    if (!name) return;
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.innerHTML = `
+      <img src="${photo}" alt="${name}">
+      <h3>${name}</h3>
+      <p>${kcal} ккал • ${protein}Б • ${fat}Ж • ${carbs}У</p>
+    `;
+    card.addEventListener("click", () => openPopup({ name, kcal, protein, fat, carbs, photo, ingredients, steps, note }));
+    container.appendChild(card);
+  });
+}
+
+function openPopup(recipe) {
+  document.getElementById("popupImg").src = recipe.photo;
+  document.getElementById("popupTitle").textContent = recipe.name;
+  document.getElementById("popupKcal").textContent = `${recipe.kcal} ккал • ${recipe.protein}Б • ${recipe.fat}Ж • ${recipe.carbs}У`;
+  document.getElementById("popupIngredients").textContent = recipe.ingredients.replace(/;/g, "; ");
+  document.getElementById("popupSteps").textContent = recipe.steps.replace(/;/g, "\n");
+  document.getElementById("popupNote").textContent = recipe.note || "";
+  document.getElementById("popup").classList.remove("hidden");
+}
+
+document.getElementById("closePopup").addEventListener("click", () => {
+  document.getElementById("popup").classList.add("hidden");
+});
+
+window.onload = loadRecipes;

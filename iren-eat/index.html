@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ирен ест</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Ирен ест</h1>
+  </header>
+
+  <main id="recipes" class="cards"></main>
+
+  <!-- всплывающее окно -->
+  <div id="popup" class="popup hidden">
+    <div class="popup-content">
+      <button id="closePopup">✕</button>
+      <img id="popupImg" alt="" />
+      <h2 id="popupTitle"></h2>
+      <p id="popupKcal"></p>
+      <h3>Ингредиенты</h3>
+      <p id="popupIngredients"></p>
+      <h3>Шаги</h3>
+      <p id="popupSteps"></p>
+      <p id="popupNote" class="note"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
