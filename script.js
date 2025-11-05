@@ -1,4 +1,4 @@
-const sheetUrl = "https://docs.google.com/spreadsheets/d/1RH7t1yeiD8balh36yAGD79qQlT1ZCiIkn1858qJmk8w/export?format=csv";
+const sheetUrl = "https://script.google.com/macros/s/AKfycbxoQSGQXgp1Lsox6nB3fYP8vcwjuplhzNxTq3XmdMA7Vh1sBWj5nj4p2YpvzObN2K6z/exec";
 
 async function loadRecipes() {
   const response = await fetch(sheetUrl);
