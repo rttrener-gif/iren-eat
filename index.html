@@ -4,32 +4,73 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ирен ест</title>
+
+  <!-- Шрифт -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Стили -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://i.ibb.co/PBwpqtc/IMG-3169.jpg" />
+
+  <!-- Meta для Telegram -->
+  <meta property="og:title" content="Ирен ест — каталог рецептов" />
+  <meta property="og:image" content="https://i.ibb.co/PBwpqtc/IMG-3169.jpg" />
+  <meta name="theme-color" content="#C09999" />
 </head>
+
 <body>
+
+  <!-- APP WRAPPER -->
   <div class="app">
+
+    <!-- HEADER -->
     <header>
       <h1>Ирен ест</h1>
     </header>
 
+    <!-- CARDS -->
     <main id="recipes" class="cards"></main>
 
-  <!-- всплывающее окно -->
+  </div> <!-- /app -->
+
+  <!-- POPUP (MODAL) -->
   <div id="popup" class="popup hidden">
     <div class="popup-content">
       <button id="closePopup">✕</button>
       <img id="popupImg" alt="" />
       <h2 id="popupTitle"></h2>
       <p id="popupKcal"></p>
+
       <h3>Ингредиенты</h3>
       <p id="popupIngredients"></p>
+
       <h3>Шаги</h3>
       <p id="popupSteps"></p>
+
       <p id="popupNote" class="note"></p>
     </div>
   </div>
 
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div class="bottom-bar__item">
+      <div class="bottom-bar__icon"></div>
+      <span>Рецепты</span>
+    </div>
+    <div class="bottom-bar__item">
+      <div class="bottom-bar__icon"></div>
+      <span>Избранное</span>
+    </div>
+    <div class="bottom-bar__item">
+      <div class="bottom-bar__icon"></div>
+      <span>Профиль</span>
+    </div>
+  </div>
+
+  <!-- JS -->
   <script src="script.js"></script>
+
 </body>
 </html>
