@@ -1,93 +1,203 @@
 :root {
-    --lime-green: #B9E901;
-    --blue-violet: #4300BD;
-    --white: #FFFFFF;
-    --font: 'Poppins', sans-serif;
-  }
-  
-  body {
-    background-color: var(--blue-violet);
-    color: var(--white);
-    font-family: var(--font);
-    margin: 0;
-    padding: 0;
-  }
-  
-  header {
-    text-align: center;
-    padding: 20px 0;
-    font-weight: 600;
-    font-size: 1.8em;
-    color: var(--lime-green);
-  }
-  
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .card {
-    background-color: var(--lime-green);
-    color: var(--blue-violet);
-    border-radius: 16px;
-    overflow: hidden;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-  }
-  .card:hover {
-    transform: scale(1.02);
-  }
+  --lime-green: #B9E901;
+  --blue-violet: #4300BD;
+  --white: #FFFFFF;
+  --black: #050309;
+  --card-radius: 18px;
+  --popup-radius: 20px;
+  --font: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* БАЗА */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  color: var(--white);
+  background-color: var(--blue-violet);
+  display: flex;
+  justify-content: center;
+}
+
+/* Контейнер под мобильный размер, по центру экрана на десктопе */
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  padding: 16px 16px 24px;
+}
+
+/* ХЕДЕР */
+
+header {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+header h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.03em;
+  color: var(--lime-green);
+}
+
+/* СЕТКА КАРТОЧЕК — вертикальный список, как в приложении */
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+/* КАРТОЧКА */
+
+.card {
+  background: var(--lime-green);
+  color: var(--blue-violet);
+  border-radius: var(--card-radius);
+  padding: 10px 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transform: translateY(0);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Мини-превью фото слева */
+
+.card img {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Текстовый блок внутри карточки */
+
+.card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* POPUP / МОДАЛКА */
+
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 9, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.hidden {
+  display: none;
+}
+
+.popup-content {
+  background: var(--lime-green);
+  color: var(--blue-violet);
+  border-radius: var(--popup-radius);
+  padding: 16px 16px 20px;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  position: relative;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.popup-content img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+  max-height: 220px;
+}
+
+#closePopup {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--blue-violet);
+  cursor: pointer;
+}
+
+#popupTitle {
+  margin: 12px 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#popupKcal {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.popup-content h3 {
+  margin: 10px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#popupIngredients,
+#popupSteps {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 12px;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* Чуть-чуть адаптива для совсем маленьких экранов */
+
+@media (max-width: 360px) {
   .card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
+    width: 64px;
+    height: 64px;
   }
-  .card h3 {
-    margin: 12px 0 4px;
+
+  header h1 {
+    font-size: 24px;
   }
-  .card p {
-    margin: 0 0 12px;
-    font-size: 0.9em;
-  }
-  
-  /* Popup */
-  .popup {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .hidden { display: none; }
-  
-  .popup-content {
-    background: var(--lime-green);
-    color: var(--blue-violet);
-    border-radius: 20px;
-    padding: 20px;
-    max-width: 400px;
-    width: 90%;
-    position: relative;
-  }
-  .popup-content img {
-    width: 100%;
-    border-radius: 12px;
-  }
-  #closePopup {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: var(--blue-violet);
-    cursor: pointer;
-  }
-  .note {
-    font-style: italic;
-    margin-top: 10px;
-  }
+}
