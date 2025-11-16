@@ -11,10 +11,8 @@
   <!-- Стили -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Favicon -->
+  <!-- Favicon и мета -->
   <link rel="icon" type="image/png" href="https://i.ibb.co/PBwpqtc/IMG-3169.jpg" />
-
-  <!-- Meta для Telegram -->
   <meta property="og:title" content="Ирен ест — каталог рецептов" />
   <meta property="og:image" content="https://i.ibb.co/PBwpqtc/IMG-3169.jpg" />
   <meta name="theme-color" content="#C09999" />
@@ -30,8 +28,27 @@
       <h1>Ирен ест</h1>
     </header>
 
-    <!-- CARDS -->
-    <main id="recipes" class="cards"></main>
+    <!-- ФИЛЬТР ПО ТЕГАМ -->
+    <div id="tagFilters" class="tags-row">
+      <!-- сюда скрипт подставит чипы: "Все", "завтрак", ... -->
+    </div>
+
+    <!-- СЕКЦИИ -->
+    <main id="recipesSection" class="section section--active">
+      <div id="recipes" class="cards"></div>
+    </main>
+
+    <main id="shopSection" class="section">
+      <div id="shop" class="cards"></div>
+    </main>
+
+    <main id="favoritesSection" class="section">
+      <div id="favorites" class="cards"></div>
+    </main>
+
+    <main id="profileSection" class="section">
+      <p class="stub-text">Профиль скоро тоже оживим 🧡</p>
+    </main>
 
   </div> <!-- /app -->
 
@@ -39,9 +56,12 @@
   <div id="popup" class="popup hidden">
     <div class="popup-content">
       <button id="closePopup">✕</button>
+
       <img id="popupImg" alt="" />
       <h2 id="popupTitle"></h2>
       <p id="popupKcal"></p>
+
+      <button id="favButton" class="fav-btn">🤍 В избранное</button>
 
       <h3>Ингредиенты</h3>
       <p id="popupIngredients"></p>
@@ -55,18 +75,22 @@
 
   <!-- BOTTOM BAR -->
   <div class="bottom-bar">
-    <div class="bottom-bar__item">
+    <button class="bottom-bar__item bottom-bar__item--active" data-tab="recipes">
       <div class="bottom-bar__icon"></div>
       <span>Рецепты</span>
-    </div>
-    <div class="bottom-bar__item">
+    </button>
+    <button class="bottom-bar__item" data-tab="shop">
+      <div class="bottom-bar__icon"></div>
+      <span>Покупки</span>
+    </button>
+    <button class="bottom-bar__item" data-tab="favorites">
       <div class="bottom-bar__icon"></div>
       <span>Избранное</span>
-    </div>
-    <div class="bottom-bar__item">
+    </button>
+    <button class="bottom-bar__item" data-tab="profile">
       <div class="bottom-bar__icon"></div>
       <span>Профиль</span>
-    </div>
+    </button>
   </div>
 
   <!-- JS -->
