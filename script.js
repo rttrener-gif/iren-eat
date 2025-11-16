@@ -1,13 +1,16 @@
 const RECIPES_URL = "./recipes.json";
-const SHOP_URL = "./shop.json"; // сделаешь по аналогии с recipes.json
+const SHOP_URL = "./shop.json";
 
 let allRecipes = [];
 let shopItems = [];
+
 let favoritesIds = [];
-let currentTag = "all";
+let currentTab = "recipes";
+let currentRecipesTag = "all";
+let currentShopTag = "all";
 let currentRecipeForPopup = null;
 
-/* ====== ВСПОМОГАТЕЛЬНЫЕ ====== */
+/* ===== ВСПОМОГАТЕЛЬНЫЕ ===== */
 
 function getRecipeId(r) {
   return String(
@@ -35,17 +38,20 @@ function isFavorite(id) {
   return favoritesIds.includes(id);
 }
 
-/* ====== РЕНДЕР КАРТОЧЕК РЕЦЕПТОВ ====== */
+/* ===== РЕЦЕПТЫ ===== */
 
 function renderRecipes() {
   const container = document.getElementById("recipes");
   container.innerHTML = "";
 
   let filtered = allRecipes;
-  if (currentTag !== "all") {
+  if (currentRecipesTag !== "all") {
     filtered = allRecipes.filter(r => {
       const tags = (r["Теги"] || "").toLowerCase();
-      return tags.split(",").map(t => t.trim()).includes(currentTag);
+      return tags
+        .split(",")
+        .map(t => t.trim())
+        .includes(currentRecipesTag.toLowerCase());
     });
   }
 
@@ -56,7 +62,6 @@ function renderRecipes() {
     const fat = (r["Жиры (г)"] || "").trim();
     const carbs = (r["Углеводы (г)"] || "").trim();
     const photo = (r["Фото (URL)"] || "").trim();
-
     if (!name) return;
 
     const card = document.createElement("div");
@@ -78,8 +83,6 @@ function renderRecipes() {
   });
 }
 
-/* ====== РЕНДЕР ИЗБРАННОГО ====== */
-
 function renderFavorites() {
   const container = document.getElementById("favorites");
   container.innerHTML = "";
@@ -87,7 +90,7 @@ function renderFavorites() {
   const favorites = allRecipes.filter(r => isFavorite(getRecipeId(r)));
 
   if (!favorites.length) {
-    container.innerHTML = `<p class="stub-text">Пока нет избранных рецептов. Нажми "🤍 В избранное" в карточке.</p>`;
+    container.innerHTML = `<p class="stub-text">Пока нет избранных рецептов. Нажми «🤍 В избранное» в карточке.</p>`;
     return;
   }
 
@@ -115,7 +118,7 @@ function renderFavorites() {
   });
 }
 
-/* ====== РЕНДЕР ПОКУПОК (shop.json) ====== */
+/* ===== ПОКУПКИ (SHOP) ===== */
 
 function renderShop() {
   const container = document.getElementById("shop");
@@ -126,10 +129,29 @@ function renderShop() {
     return;
   }
 
-  shopItems.forEach(item => {
+  let filtered = shopItems;
+  if (currentShopTag !== "all") {
+    filtered = shopItems.filter(item => {
+      const types = (item["Тип"] || "")
+        .split(",")
+        .map(t => t.trim());
+      return types.includes(currentShopTag);
+    });
+  }
+
+  filtered.forEach(item => {
     const name = (item["Название"] || "").trim();
-    const desc = (item["Описание"] || "").trim();
-    const photo = (item["Фото (URL)"] || "").trim();
+    const kcalRaw = (item["Калорийность (на порцию/упаковку)"] || "").trim();
+    const photo = (item["Изображение"] || "").trim();
+
+    if (!name) return;
+
+    // немного причесываем строку кбжу
+    const kcalBlock = kcalRaw
+      .replace(/\n\n/g, " • ")
+      .replace(/\n/g, " ")
+      .replace(/\s{2,}/g, " ")
+      .trim();
 
     const card = document.createElement("div");
     card.classList.add("card");
@@ -138,7 +160,7 @@ function renderShop() {
       <img src="${photo}" alt="${name}">
       <div class="card-text">
         <h3>${name}</h3>
-        <p>${desc}</p>
+        <p>${kcalBlock}</p>
       </div>
     `;
 
@@ -146,7 +168,7 @@ function renderShop() {
   });
 }
 
-/* ====== ПОПАП РЕЦЕПТА + ИЗБРАННОЕ ====== */
+/* ===== ПОПАП РЕЦЕПТА + ИЗБРАННОЕ ===== */
 
 function openPopup(r) {
   currentRecipeForPopup = r;
@@ -191,9 +213,9 @@ function closePopup() {
   currentRecipeForPopup = null;
 }
 
-/* ====== ФИЛЬТР ПО ТЕГАМ ====== */
+/* ===== ФИЛЬТРЫ ПО ТЕГАМ ===== */
 
-function buildTagFilters() {
+function renderRecipeFilters() {
   const container = document.getElementById("tagFilters");
   container.innerHTML = "";
 
@@ -206,36 +228,106 @@ function buildTagFilters() {
     });
   });
 
-  const allButton = document.createElement("button");
-  allButton.textContent = "Все";
-  allButton.className = "filter-chip filter-chip--active";
-  allButton.dataset.tag = "all";
-  container.appendChild(allButton);
+  const allBtn = document.createElement("button");
+  allBtn.textContent = "Все";
+  allBtn.className = "filter-chip" + (currentRecipesTag === "all" ? " filter-chip--active" : "");
+  allBtn.dataset.tag = "all";
+  container.appendChild(allBtn);
 
   Array.from(tagsSet).forEach(tag => {
     const btn = document.createElement("button");
     btn.textContent = tag;
-    btn.className = "filter-chip";
+    btn.className = "filter-chip" + (currentRecipesTag.toLowerCase() === tag ? " filter-chip--active" : "");
     btn.dataset.tag = tag;
     container.appendChild(btn);
   });
+}
 
-  container.addEventListener("click", e => {
-    if (!(e.target instanceof HTMLElement)) return;
-    const tag = e.target.dataset.tag;
-    if (!tag) return;
+function renderShopFilters() {
+  const container = document.getElementById("tagFilters");
+  container.innerHTML = "";
 
-    currentTag = tag;
-    document
-      .querySelectorAll(".filter-chip")
-      .forEach(chip => chip.classList.remove("filter-chip--active"));
-    e.target.classList.add("filter-chip--active");
+  const tagsSet = new Set();
+  shopItems.forEach(item => {
+    const raw = (item["Тип"] || "");
+    raw.split(",").forEach(t => {
+      const tag = t.trim();
+      if (tag) tagsSet.add(tag);
+    });
+  });
 
-    renderRecipes();
+  const allBtn = document.createElement("button");
+  allBtn.textContent = "Все";
+  allBtn.className = "filter-chip" + (currentShopTag === "all" ? " filter-chip--active" : "");
+  allBtn.dataset.tag = "all";
+  container.appendChild(allBtn);
+
+  Array.from(tagsSet).forEach(tag => {
+    const btn = document.createElement("button");
+    btn.textContent = tag;
+    btn.className = "filter-chip" + (currentShopTag === tag ? " filter-chip--active" : "");
+    btn.dataset.tag = tag;
+    container.appendChild(btn);
   });
 }
 
-/* ====== ТАБЫ (Нижнее меню) ====== */
+/* общий обработчик кликов по чипам */
+function setupTagClickHandler() {
+  const container = document.getElementById("tagFilters");
+  container.addEventListener("click", e => {
+    const chip = e.target.closest(".filter-chip");
+    if (!chip) return;
+    const tag = chip.dataset.tag;
+    if (!tag) return;
+
+    if (currentTab === "recipes") {
+      currentRecipesTag = tag;
+      document
+        .querySelectorAll(".filter-chip")
+        .forEach(c => c.classList.remove("filter-chip--active"));
+      chip.classList.add("filter-chip--active");
+      renderRecipes();
+    } else if (currentTab === "shop") {
+      currentShopTag = tag;
+      document
+        .querySelectorAll(".filter-chip")
+        .forEach(c => c.classList.remove("filter-chip--active"));
+      chip.classList.add("filter-chip--active");
+      renderShop();
+    }
+  });
+}
+
+/* ===== ТАБЫ (нижнее меню) ===== */
+
+function setActiveTab(tab) {
+  currentTab = tab;
+
+  document
+    .querySelectorAll(".bottom-bar__item")
+    .forEach(b => b.classList.remove("bottom-bar__item--active"));
+  document
+    .querySelector(`.bottom-bar__item[data-tab="${tab}"]`)
+    ?.classList.add("bottom-bar__item--active");
+
+  document
+    .querySelectorAll(".section")
+    .forEach(s => s.classList.remove("section--active"));
+  document
+    .getElementById(tab + "Section")
+    .classList.add("section--active");
+
+  if (tab === "recipes") {
+    renderRecipes();
+    renderRecipeFilters();
+  } else if (tab === "shop") {
+    renderShop();
+    renderShopFilters();
+  } else if (tab === "favorites") {
+    renderFavorites();
+    // фильтров для избранного пока нет — можно прятать/оставлять старые
+  }
+}
 
 function setupTabs() {
   const tabs = document.querySelectorAll(".bottom-bar__item");
@@ -243,37 +335,22 @@ function setupTabs() {
     btn.addEventListener("click", () => {
       const tab = btn.dataset.tab;
       if (!tab) return;
-
-      document
-        .querySelectorAll(".bottom-bar__item")
-        .forEach(b => b.classList.remove("bottom-bar__item--active"));
-      btn.classList.add("bottom-bar__item--active");
-
-      document
-        .querySelectorAll(".section")
-        .forEach(s => s.classList.remove("section--active"));
-      document
-        .getElementById(tab + "Section")
-        .classList.add("section--active");
-
-      if (tab === "favorites") {
-        renderFavorites();
-      } else if (tab === "shop") {
-        renderShop();
-      }
+      setActiveTab(tab);
     });
   });
 }
 
-/* ====== ЗАГРУЗКА ДАННЫХ ====== */
+/* ===== ЗАГРУЗКА ДАННЫХ ===== */
 
 async function loadRecipes() {
   try {
     const res = await fetch(RECIPES_URL);
     const data = await res.json();
     allRecipes = data;
-    buildTagFilters();
     renderRecipes();
+    if (currentTab === "recipes") {
+      renderRecipeFilters();
+    }
   } catch (e) {
     console.error("Ошибка загрузки рецептов", e);
   }
@@ -284,18 +361,23 @@ async function loadShop() {
     const res = await fetch(SHOP_URL);
     if (!res.ok) return;
     shopItems = await res.json();
+    if (currentTab === "shop") {
+      renderShop();
+      renderShopFilters();
+    }
   } catch (e) {
     console.error("Ошибка загрузки shop.json", e);
   }
 }
 
-/* ====== ИНИЦИАЛИЗАЦИЯ ====== */
+/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
 
 function init() {
   loadFavoritesFromStorage();
   loadRecipes();
   loadShop();
   setupTabs();
+  setupTagClickHandler();
 
   document
     .getElementById("closePopup")
@@ -314,8 +396,11 @@ function init() {
       saveFavoritesToStorage();
       renderRecipes();
       renderFavorites();
-      openPopup(currentRecipeForPopup); // обновим кнопку
+      openPopup(currentRecipeForPopup); // обновим кнопку в модалке
     });
+
+  // начальный таб
+  setActiveTab("recipes");
 }
 
 window.onload = init;
